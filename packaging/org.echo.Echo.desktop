@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Echo
+GenericName=Music Player
+Comment=Play and organize your local music collection
+Exec=echo %U
+Icon=org.echo.Echo
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+Keywords=music;audio;player;library;playlist;
+StartupNotify=true
+MimeType=audio/mpeg;audio/mp4;audio/x-m4a;audio/aac;audio/flac;audio/ogg;audio/vorbis;audio/opus;audio/wav;audio/x-wav;audio/x-ms-wma;audio/x-scpls;audio/x-mpegurl;application/vnd.apple.mpegurl;

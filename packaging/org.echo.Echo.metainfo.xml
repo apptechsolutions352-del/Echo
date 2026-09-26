@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.echo.Echo</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  <name>Echo</name>
+  <summary>A local music library and audio player for Linux</summary>
+  <developer id="org.echo">
+    <name>Echo</name>
+  </developer>
+  <content_rating type="oars-1.1" />
+  <description>
+    <p>Echo indexes music folders, keeps a searchable local catalog, manages playlists, and plays audio through the Linux desktop audio stack.</p>
+  </description>
+  <launchable type="desktop-id">org.echo.Echo.desktop</launchable>
+  <provides>
+    <id>org.echo.Echo.desktop</id>
+  </provides>
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Player</category>
+  </categories>
+  <keywords>
+    <keyword>music</keyword>
+    <keyword>audio</keyword>
+    <keyword>playlist</keyword>
+    <keyword>library</keyword>
+  </keywords>
+  <releases>
+    <release version="0.1.0" date="2026-09-25">
+      <description><p>Initial Linux desktop release.</p></description>
+    </release>
+  </releases>
+</component>
