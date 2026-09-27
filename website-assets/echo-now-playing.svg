@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Echo Now Playing screen</title>
+  <desc id="desc">A representative full-window Echo playback view with sample cover art, track details and transport controls.</desc>
+  <defs>
+    <linearGradient id="back" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#352340"/><stop offset=".5" stop-color="#242328"/><stop offset="1" stop-color="#173b3b"/></linearGradient>
+    <linearGradient id="album" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaa5c4"/><stop offset=".48" stop-color="#8a5a9b"/><stop offset="1" stop-color="#263e5a"/></linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="22"/></filter>
+    <clipPath id="window"><rect width="1200" height="900" rx="18"/></clipPath>
+  </defs>
+  <g clip-path="url(#window)" font-family="Inter, Noto Sans, Arial, sans-serif">
+    <rect width="1200" height="900" fill="#242328"/>
+    <circle cx="220" cy="300" r="300" fill="#70466c" opacity=".28"/><circle cx="1060" cy="710" r="340" fill="#173b3b" opacity=".42"/>
+    <rect width="1200" height="54" fill="#171719" opacity=".55"/>
+    <text x="28" y="35" fill="#f1eff4" font-size="14">←  My music</text>
+    <rect x="396" y="100" width="408" height="408" rx="10" fill="#875d95"/>
+    <circle cx="600" cy="304" r="138" fill="none" stroke="#fff4eb" stroke-width="2" opacity=".5"/>
+    <circle cx="600" cy="304" r="103" fill="none" stroke="#fff4eb" stroke-width="1.5" opacity=".5"/>
+    <circle cx="600" cy="304" r="68" fill="none" stroke="#fff4eb" stroke-width="1.5" opacity=".5"/>
+    <path d="M414 410c92-78 161 52 242-34s88-111 132-127" fill="none" stroke="#fff4eb" stroke-width="4" opacity=".8" stroke-linecap="round"/>
+    <text x="600" y="450" fill="#fff4eb" text-anchor="middle" font-size="13" font-weight="700" letter-spacing="4">SMALL HOURS</text>
+    <text x="600" y="596" fill="#f1eff4" text-anchor="middle" font-size="27" font-weight="650">Midnight Windows</text>
+    <text x="600" y="628" fill="#c9c4ce" text-anchor="middle" font-size="15">The Paper Satellites · Small Hours</text>
+    <g fill="#c9c4ce" text-anchor="middle" font-size="22"><text x="454" y="699">⇄</text><text x="520" y="699">|◀</text><text x="680" y="699">▶|</text><text x="746" y="699">↻</text></g>
+    <circle cx="600" cy="688" r="30" fill="#b99ae3"/><text x="600" y="697" fill="#241d2b" text-anchor="middle" font-size="23">Ⅱ</text>
+    <text x="396" y="758" fill="#c9c4ce" font-size="12">1:24</text><text x="804" y="758" fill="#c9c4ce" text-anchor="end" font-size="12">3:42</text>
+    <line x1="396" y1="779" x2="804" y2="779" stroke="#ffffff" stroke-opacity=".28" stroke-width="3" stroke-linecap="round"/><line x1="396" y1="779" x2="551" y2="779" stroke="#b99ae3" stroke-width="3" stroke-linecap="round"/><circle cx="551" cy="779" r="6" fill="#f1eff4"/>
+    <text x="600" y="833" fill="#b99ae3" text-anchor="middle" font-size="12" letter-spacing="2">NOW PLAYING</text>
+  </g>
+</svg>

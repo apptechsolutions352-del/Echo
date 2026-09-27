@@ -5,6 +5,7 @@ GenericName=Music Player
 Comment=Play and organize your local music collection
 Exec=echo %U
 Icon=org.echo.Echo
+StartupWMClass=org.echo.Echo
 Terminal=false
 Categories=AudioVideo;Audio;Player;
 Keywords=music;audio;player;library;playlist;

@@ -6,8 +6,9 @@
   <name>Echo</name>
   <summary>A local music library and audio player for Linux</summary>
   <developer id="org.echo">
-    <name>Echo</name>
+    <name>Manasseh Sasu</name>
   </developer>
+  <url type="homepage">https://echo-2ve.pages.dev/</url>
   <content_rating type="oars-1.1" />
   <description>
     <p>Echo indexes music folders, keeps a searchable local catalog, manages playlists, and plays audio through the Linux desktop audio stack.</p>
@@ -28,6 +29,9 @@
     <keyword>library</keyword>
   </keywords>
   <releases>
+    <release version="0.1.1" date="2026-09-27">
+      <description><p>Linux packaging, application identity, and first-launch install reporting updates.</p></description>
+    </release>
     <release version="0.1.0" date="2026-09-25">
       <description><p>Initial Linux desktop release.</p></description>
     </release>
