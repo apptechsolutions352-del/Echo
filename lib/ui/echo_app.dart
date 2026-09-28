@@ -16,6 +16,8 @@ import '../models/track.dart';
 import '../services/audio_controller.dart';
 import '../services/library_scanner.dart';
 import '../services/m3u_service.dart';
+import '../services/streaming_manager.dart';
+import 'streaming_connections_panel.dart';
 
 final _brightness = ValueNotifier(Brightness.dark);
 Color _ink = const Color(0xFFF1EFF4);
@@ -37,12 +39,14 @@ class EchoApp extends StatelessWidget {
     required this.database,
     required this.scanner,
     required this.audio,
+    required this.streaming,
     this.initialFiles = const [],
   });
 
   final LibraryDatabase database;
   final LibraryScanner scanner;
   final AudioController audio;
+  final StreamingManager streaming;
   final List<String> initialFiles;
 
   @override
@@ -85,6 +89,7 @@ class EchoApp extends StatelessWidget {
         database: database,
         scanner: scanner,
         audio: audio,
+        streaming: streaming,
         initialFiles: initialFiles,
       ),
     );
@@ -101,11 +106,13 @@ class _EchoHome extends StatefulWidget {
     required this.database,
     required this.scanner,
     required this.audio,
+    required this.streaming,
     required this.initialFiles,
   });
   final LibraryDatabase database;
   final LibraryScanner scanner;
   final AudioController audio;
+  final StreamingManager streaming;
   final List<String> initialFiles;
 
   @override
@@ -1130,6 +1137,8 @@ class _EchoHomeState extends State<_EchoHome> {
         'Music folders',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       ),
+      const SizedBox(height: 20),
+      StreamingConnectionsPanel(manager: widget.streaming),
       SwitchListTile(
         contentPadding: EdgeInsets.zero,
         title: const Text('Light mode'),

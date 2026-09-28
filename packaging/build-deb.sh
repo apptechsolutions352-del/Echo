@@ -31,7 +31,7 @@ install -d "$STAGE/opt/echo" \
   "$STAGE/DEBIAN"
 
 cp -a "$BUNDLE/." "$STAGE/opt/echo/"
-ln -s /opt/echo/echo "$STAGE/usr/bin/echo"
+ln -s /opt/echo/echo "$STAGE/usr/bin/echo-player"
 install -m 644 "$ROOT/packaging/org.echo.Echo.desktop" \
   "$STAGE/usr/share/applications/org.echo.Echo.desktop"
 install -m 644 "$ROOT/packaging/icons/org.echo.Echo.svg" \
@@ -45,7 +45,7 @@ Version: $VERSION
 Section: sound
 Priority: optional
 Architecture: $ARCH
-Depends: libc6, libgtk-3-0 | libgtk-3-0t64, libglib2.0-0 | libglib2.0-0t64, libstdc++6
+Depends: libc6, libgtk-3-0 | libgtk-3-0t64, libglib2.0-0 | libglib2.0-0t64, libmpv2 | libmpv2t64, libstdc++6
 Maintainer: Manasseh Sasu <apptechsolutions352@gmail.com>
 Homepage: https://echo-2ve.pages.dev
 Description: Linux desktop music library and player

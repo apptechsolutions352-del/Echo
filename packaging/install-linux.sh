@@ -12,7 +12,7 @@ fi
 
 install -d "$PREFIX/lib/echo" "$PREFIX/bin"
 cp -a "$APP_DIR/." "$PREFIX/lib/echo/"
-ln -sfn "$PREFIX/lib/echo/echo" "$PREFIX/bin/echo"
+ln -sfn "$PREFIX/lib/echo/echo" "$PREFIX/bin/echo-player"
 install -Dm644 "$ROOT/packaging/org.echo.Echo.desktop" "$PREFIX/share/applications/org.echo.Echo.desktop"
 install -Dm644 "$ROOT/packaging/org.echo.Echo.metainfo.xml" "$PREFIX/share/metainfo/org.echo.Echo.metainfo.xml"
 install -Dm644 "$ROOT/packaging/icons/org.echo.Echo.svg" "$PREFIX/share/icons/hicolor/scalable/apps/org.echo.Echo.svg"

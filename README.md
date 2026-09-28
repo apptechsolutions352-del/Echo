@@ -10,7 +10,7 @@ License: Proprietary. All rights reserved.
 
 ## Build and install
 
-Prerequisites: Flutter with Linux desktop enabled, CMake, Ninja, GTK 3 development headers, and network access for Flutter/native asset downloads.
+Prerequisites: Flutter with Linux desktop enabled, CMake, Ninja, GTK 3 development headers, libmpv, and network access for Flutter/native asset downloads.
 
 ```sh
 flutter pub get
@@ -27,7 +27,7 @@ The release bundle is written to `build/linux/x64/release/bundle`. Install it un
 
 Pass an alternate installation prefix as the first argument. The packaging directory contains the desktop entry, AppStream metadata, application icon, build helper, and install helper. Debian users can validate metadata with `desktop-file-validate` and `appstreamcli validate`.
 
-Build a Debian/Ubuntu amd64 installer from the release bundle with:
+Build a Debian/Ubuntu amd64 installer from the release bundle with. The package declares GTK, GLib, and libmpv runtime dependencies:
 
 ```sh
 ./packaging/build-deb.sh
@@ -48,3 +48,21 @@ On the first launch for a local app data installation, Echo makes one empty-body
 ## Current integration boundary
 
 The player uses libmpv via media_kit and supports queue transport, seeking, shuffle, repeat, and volume. On Linux, playback state and controls are exposed through MPRIS2 over D-Bus. Output-device errors are surfaced in the UI. A DSP equalizer pipeline and crossfade are not implemented. The AppStream metadata points to the published project homepage.
+
+## Streaming provider integrations
+
+`lib/services/streaming_provider.dart` defines the provider adapter API. A service integration implements `StreamingProvider` for its own authorization flow, catalog search, and playback URL resolution, then registers the adapter in `StreamingProviderRegistry`. Call `AudioController.playStreamingTrack(provider, result)` to resolve the result immediately before playback; this supports services that issue expiring stream URLs. Remote results are played through the existing media_kit/libmpv player and are not added to the local SQLite catalog.
+
+There is no single API or authentication flow shared by all streaming services. The adapter is the extension point; it does not include credentials or a built-in integration for any particular commercial service. Providers can enforce account, subscription, regional, and playback restrictions in their own implementation.
+
+## Streaming service accounts and playlists
+
+The UI-facing integration is `StreamingService`; providers return `UnifiedPlaylist` values, and `StreamingManager` aggregates them. `SpotifyService` uses Spotify's Web API through the Dart `spotify` package with PKCE and a temporary loopback callback server on `127.0.0.1:8080`. In the Spotify developer dashboard, register exactly `http://127.0.0.1:8080/callback`. Launch Echo with the public client ID, for example:
+
+```sh
+flutter run -d linux --dart-define=SPOTIFY_CLIENT_ID=your_client_id
+```
+
+For release builds, pass the same Dart define to the build command. The client ID is public; never put a Spotify client secret in the desktop app. Spotify connection currently exists only in memory for the current run. Persisting sessions needs OS keyring storage for the PKCE credentials and verifier. `AppleMusicService` is an intentionally disconnected blueprint: a production implementation needs a backend to sign developer tokens and an Apple Music user authorization flow. The settings UI uses `StreamingConnectionsPanel(manager: manager)` and shows playlists polymorphically.
+
+This layer reads playlist metadata; it does not provide licensed full-track playback. Each platform has separate API and playback terms. Before releasing a provider, follow its attribution requirements for cover art and metadata and confirm that its API access is approved for Echo's distribution model.

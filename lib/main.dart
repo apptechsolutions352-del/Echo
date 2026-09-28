@@ -8,8 +8,11 @@ import 'package:path/path.dart' as p;
 
 import 'data/library_database.dart';
 import 'services/audio_controller.dart';
+import 'services/apple_music_service.dart';
 import 'services/install_analytics.dart';
 import 'services/library_scanner.dart';
+import 'services/spotify_service.dart';
+import 'services/streaming_manager.dart';
 import 'ui/echo_app.dart';
 
 Future<void> main(List<String> args) async {
@@ -18,12 +21,19 @@ Future<void> main(List<String> args) async {
   MediaKit.ensureInitialized();
   await MetadataGod.initialize();
   final database = await LibraryDatabase.open();
+  final streaming = StreamingManager([
+    SpotifyService(
+      clientId: const String.fromEnvironment('SPOTIFY_CLIENT_ID'),
+    ),
+    AppleMusicService(),
+  ]);
   unawaited(InstallAnalytics.reportFirstLaunch(database));
   runApp(
     EchoApp(
       database: database,
       scanner: LibraryScanner(database),
       audio: AudioController(),
+      streaming: streaming,
       initialFiles: args
           .map(
             (arg) => arg.startsWith('file:')

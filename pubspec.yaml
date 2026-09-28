@@ -46,6 +46,8 @@ dependencies:
   image: ^4.10.1
   path: ^1.9.1
   sqflite_common: ^2.5.13
+  spotify: ^0.16.1
+  shelf: ^1.4.2
 
 dev_dependencies:
   flutter_test:

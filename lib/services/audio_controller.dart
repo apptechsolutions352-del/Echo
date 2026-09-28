@@ -6,6 +6,7 @@ import 'package:media_kit/media_kit.dart'
 
 import '../models/track.dart';
 import 'mpris_bridge.dart';
+import 'streaming_provider.dart';
 
 class AudioController {
   final Player player = Player();
@@ -21,6 +22,7 @@ class AudioController {
   List<Track> _queue = const [];
   final List<StreamSubscription<Object?>> _subscriptions = [];
   int _lastPublishedSecond = -1;
+  bool _changingShuffle = false;
   double _lastAudibleVolume = 100;
   String _playbackStatus = 'Stopped';
 
@@ -53,20 +55,25 @@ class AudioController {
       ..add(player.stream.playlistMode.listen((value) => repeat.value = value))
       ..add(player.stream.error.listen((value) => error.value = value))
       ..add(
-        player.stream.playlist.listen((value) {
-          if (value.index >= 0 && value.index < _queue.length) {
-            currentTrack.value = _queue[value.index];
-            position.value = Duration.zero;
-          }
+        player.stream.playlist.listen((playlist) {
+          // Enabling/disabling shuffle only changes queue order. The active
+          // media keeps playing, so a playlist reordering must not replace its
+          // metadata with whichever item happens to occupy the same index.
+          if (!_changingShuffle) _syncCurrentTrack(playlist);
         }),
       );
   }
 
   Future<void> playQueue(List<Track> tracks, {int startIndex = 0}) async {
     if (tracks.isEmpty) return;
+    final boundedStart = startIndex.clamp(0, tracks.length - 1);
+    final requestedTrack = tracks[boundedStart];
     final validTracks = tracks.where((track) => track.path.isNotEmpty).toList();
     if (validTracks.isEmpty) return;
-    final selectedIndex = startIndex.clamp(0, validTracks.length - 1);
+    final selectedIndex = validTracks.indexWhere(
+      (track) => track.id == requestedTrack.id && track.path == requestedTrack.path,
+    );
+    final actualIndex = selectedIndex < 0 ? 0 : selectedIndex;
     _queue = validTracks;
     _playbackStatus = 'Playing';
     error.value = null;
@@ -74,13 +81,65 @@ class AudioController {
       await player.open(
         Playlist(
           validTracks.map((track) => Media(track.path)).toList(),
-          index: selectedIndex,
+          index: actualIndex,
         ),
       );
-      currentTrack.value = validTracks[selectedIndex];
+      _syncCurrentTrack(player.state.playlist);
+      // Opening a new item may not emit a playlist stream event in media_kit.
+      // Keep the selected metadata as a fallback until that state is available.
+      currentTrack.value ??= validTracks[actualIndex];
     } on Object catch (exception) {
       _playbackStatus = 'Stopped';
       error.value = 'Unable to play this track: $exception';
+    }
+  }
+
+  void _syncCurrentTrack(Playlist playlist) {
+    if (playlist.index < 0 || playlist.index >= playlist.medias.length) return;
+    // media_kit may reorder its playlist when shuffle is enabled. Match the
+    // active URI, not its index in Echo's original queue.
+    final mediaUri = playlist.medias[playlist.index].uri;
+    final track = _queue.cast<Track?>().firstWhere(
+      (item) => item != null && _sameMediaUri(item.path, mediaUri),
+      orElse: () => null,
+    );
+    currentTrack.value = track;
+    position.value = Duration.zero;
+  }
+
+  bool _sameMediaUri(String trackPath, String mediaUri) {
+    if (trackPath == mediaUri) return true;
+    try {
+      final trackUri = Uri.parse(trackPath);
+      final media = Uri.parse(mediaUri);
+      final normalizedTrack = trackUri.scheme == 'file'
+          ? trackUri.toFilePath()
+          : trackPath;
+      final normalizedMedia = media.scheme == 'file'
+          ? media.toFilePath()
+          : mediaUri;
+      return normalizedTrack == normalizedMedia;
+    } on FormatException {
+      return false;
+    }
+  }
+
+  /// Resolve a catalog item with its provider just before opening the stream.
+  /// This lets providers refresh temporary playback URLs at the last moment.
+  Future<void> playStreamingTrack(
+    StreamingProvider provider,
+    StreamingTrack track,
+  ) async {
+    _playbackStatus = 'Playing';
+    error.value = null;
+    try {
+      final playable = await provider.resolve(track);
+      _queue = [playable.toTrack()];
+      currentTrack.value = _queue.single;
+      await player.open(Media(playable.playbackUri));
+    } on Object catch (exception) {
+      _playbackStatus = 'Stopped';
+      error.value = 'Unable to play from ${provider.name}: $exception';
     }
   }
 
@@ -132,7 +191,7 @@ class AudioController {
         case 'SetVolume':
           if (arguments is num) await setVolume(arguments.toDouble());
         case 'SetShuffle':
-          if (arguments is bool) await player.setShuffle(arguments);
+          if (arguments is bool) await setShuffle(arguments);
         case 'SetLoopStatus':
           if (arguments is String) {
             await player.setPlaylistMode(MprisBridge.loopMode(arguments));
@@ -178,10 +237,21 @@ class AudioController {
   );
 
   Future<void> toggleShuffle() async {
+    await setShuffle(!shuffle.value);
+  }
+
+  Future<void> setShuffle(bool enabled) async {
+    final current = currentTrack.value;
+    _changingShuffle = true;
     try {
-      await player.setShuffle(!shuffle.value);
+      await player.setShuffle(enabled);
     } on Object catch (exception) {
       error.value = 'Could not change shuffle: $exception';
+    } finally {
+      _changingShuffle = false;
+      // Shuffle is not a track-change operation. Preserve the displayed item
+      // that was already playing when the user pressed the control.
+      currentTrack.value = current;
     }
   }
 
